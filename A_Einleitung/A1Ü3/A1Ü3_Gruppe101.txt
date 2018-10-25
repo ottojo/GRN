@@ -1,0 +1,14 @@
+Protokolle im realen Leben
+
+Einkaufen beim Bäcker:
+-> Hallo
+<- Hallo, was hätten Sie gerne?
+-> 1 Brötchen
+<- Übergabe des Brötchens
+<- Kostet X€
+<-> Bezahlen (Evtl Austausch von Rückgeld)
+<- Auf Wiedersehen
+-> Tschüss
+
+Nachrichtenformat: Sprache,
+Reihenfolge: Festgelegt, wie oben,
