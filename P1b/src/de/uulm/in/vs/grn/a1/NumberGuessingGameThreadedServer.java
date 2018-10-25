@@ -16,7 +16,7 @@ public class NumberGuessingGameThreadedServer {
 
             while (!guessingServer.isClosed()) {
                 Socket client = guessingServer.accept();
-                executorService.submit(new NumberGuessingGameRequestHandler(client));
+                executorService.execute(new NumberGuessingGameRequestHandler(client));
             }
         } catch (IOException e) {
             e.printStackTrace();
