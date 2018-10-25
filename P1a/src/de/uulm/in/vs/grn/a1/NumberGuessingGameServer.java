@@ -17,41 +17,44 @@ public class NumberGuessingGameServer {
 
             while (!guessingServer.isClosed()) {
 
-                Socket client = guessingServer.accept();
-                System.out.printf("Client %s connected.\n", client.getInetAddress().toString());
+                Socket clientSocket = guessingServer.accept();
+                System.out.printf("Client %s:%d connected.\n",
+                        clientSocket.getInetAddress().toString(), clientSocket.getPort());
 
                 try {
-                    InputStream inputStream = client.getInputStream();
-                    OutputStream outputStream = client.getOutputStream();
+                    InputStream inputStream = clientSocket.getInputStream();
+                    OutputStream outputStream = clientSocket.getOutputStream();
 
                     // Game init
                     int number = ThreadLocalRandom.current().nextInt(50);
-                    System.out.printf("Number for client \"%s\" is %d.\n", client.getInetAddress().toString(), number);
-                    outputStream.write("Welcome! Guess the number!\n".getBytes());
+                    System.out.printf("Number for client is %d.\n", number);
+                    outputStream.write(("Welcome!\n").getBytes());
+                    outputStream.write("Guess the number!\n".getBytes());
 
                     // Game
                     for (int tries = 0; tries < 6; tries++) {
                         try {
                             int guess = readNumber(inputStream, 10);
-                            System.out.printf("Client %s guessed %d\n", client.getInetAddress().toString(), guess);
+                            System.out.printf("guessed %d\n", guess);
                             if (guess < number) {
                                 outputStream.write("You guessed too small.\n".getBytes());
                             } else if (guess > number) {
                                 outputStream.write("You guessed too big.\n".getBytes());
                             } else {
                                 // Game won
-                                System.out.printf("Client \"%s\" has won the game.", client.getInetAddress().toString());
+                                System.out.print("Client has won the game.\n");
                                 outputStream.write(("Hooray! You guessed it. The number was " + number + ".\n").getBytes());
                                 break;
                             }
                         } catch (NumberFormatException e) {
-                            System.out.println("Invalid input.");
+                            System.out.print("Invalid input.\n");
                             outputStream.write("Invalid input.\n".getBytes());
+                            // Do not count this try
                             tries--;
                         }
                         if (tries == 5) {
                             // Game lost
-                            System.out.printf("Client \"%s\" reached max number of tries.", client.getInetAddress().toString());
+                            System.out.print("Client reached max number of tries.\n");
                             outputStream.write(("You have lost. the number was " + number + ".\n").getBytes());
                         }
                     }
@@ -60,9 +63,11 @@ public class NumberGuessingGameServer {
                     outputStream.write("Game finished.".getBytes());
                     outputStream.close();
                     inputStream.close();
-                    client.close();
+                    clientSocket.close();
                 } catch (SocketException ignored) {
-                    System.out.printf("Client %s disconnected.\n", client.getInetAddress().toString());
+                    System.out.print("Client disconnected.\n");
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         } catch (IOException e) {
