@@ -10,3 +10,5 @@ Einkaufen beim Bäcker:
 <- Auf Wiedersehen
 -> Tschüss
 
+Nachrichtenformat: Sprache,
+Reihenfolge: Festgelegt, wie oben,
