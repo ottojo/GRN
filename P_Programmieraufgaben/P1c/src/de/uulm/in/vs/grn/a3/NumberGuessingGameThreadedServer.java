@@ -30,17 +30,8 @@ import java.util.concurrent.Executors;
                     executor.execute(workerThread);
                 }
             }
-            //threadFactory();
+            
         }
-        /*
-        private static void threadFactory() throws IOException {
-            while(!server.isClosed()){
-                Socket soc = server.accept();
-                System.out.println("Client connected to Server");
-                new Thread(new NumberGuessingGameRequestHandler(soc)).start();
-            }
 
-        }
-       */
     }
 

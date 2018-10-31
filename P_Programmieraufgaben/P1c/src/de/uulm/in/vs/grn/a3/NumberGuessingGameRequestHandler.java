@@ -21,37 +21,30 @@ public class NumberGuessingGameRequestHandler implements Runnable {
             //create a random number between 0 and 50
             int number = ThreadLocalRandom.current().nextInt(50);
             System.out.println("RandomNumber selected: " + number + "\n");
-            pw.write("Random Number selected. Enter your guess: \n");
-            pw.flush();
+            pw.println("Random Number selected. Enter your guess: ");
 
             for (int i = 0; i < MAX_TRIES; i++) {
                 try {
                     int inputNumber = getNumberFromClient(br);
                     System.out.println("Guess #" + i + 1 + " is " + inputNumber + "\n");
                     if (number < inputNumber) {
-                        pw.write("Your guess was bigger than the random number. \n");
-                        pw.flush();
+                        pw.println("Your guess was bigger than the random number. ");
                     }
                     else if (number > inputNumber) {
-                        pw.write("Your guess was smaller than the random number \n");
-                        pw.flush();
+                        pw.println("Your guess was smaller than the random number ");
                     }
                     else {
-                        pw.write("You guessed correct.");
-                        pw.flush();
+                        pw.println("You guessed correct.");
                         break;
                     }
-                    pw.write(("You have " + (MAX_TRIES - i - 1) + " remaining try/tries.\n"));
-                    pw.flush();
+                    pw.println(("You have " + (MAX_TRIES - i - 1) + " remaining try/tries."));
 
                     if (i == 5) {
-                        pw.write("No tries remaining. YOU LOST\n");
-                        pw.flush();
+                        pw.println("No tries remaining. YOU LOST");
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("User input was invalid. \n");
-                    pw.write("User input was invalid. \n");
-                    pw.flush();
+                    System.out.println("User input was invalid. ");
+                    pw.println("User input was invalid. ");
                     i--; //invalid input does not effect the game
                 }
             }
