@@ -2,66 +2,81 @@ package de.uulm.in.vs.grn.a3;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class NumberGuessingGameRequestHandler implements Runnable {
     private static final int MAX_TRIES = 6;
-
     private Socket client;
+    private int gameNumber;  // Just for debug purposes, to correlate console output with socket
+    private static int gameCounter = 0;
 
     public NumberGuessingGameRequestHandler(Socket soc) {
         this.client = soc;
+        gameNumber = gameCounter;
+        gameCounter++;
     }
 
     @Override
     public void run() {
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            PrintWriter pw = new PrintWriter(new OutputStreamWriter(client.getOutputStream()),true);
-            //create a random number between 0 and 50
-            int number = ThreadLocalRandom.current().nextInt(50);
-            System.out.println("RandomNumber selected: " + number + "\n");
-            pw.println("Random Number selected. Enter your guess: ");
+        System.out.printf("[%d] Client %s:%d connected.\n",
+                gameNumber, client.getInetAddress().toString(), client.getPort());
 
+        try {
+            InputStream inputStream = client.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            PrintWriter pw = new PrintWriter(client.getOutputStream(), true);
+
+            // Game init
+            int number = ThreadLocalRandom.current().nextInt(50);
+            System.out.printf("[%d] Number for client is %d.\n", gameNumber, number);
+
+            pw.println(("Welcome! You are game Nr. " + gameNumber));
+            pw.write("Guess the number!\n");
+
+            // Game
             for (int i = 0; i < MAX_TRIES; i++) {
                 try {
                     int inputNumber = getNumberFromClient(br);
-                    System.out.println("Guess #" + i + 1 + " is " + inputNumber + "\n");
-                    if (number < inputNumber) {
-                        pw.println("Your guess was bigger than the random number. ");
-                    }
-                    else if (number > inputNumber) {
-                        pw.println("Your guess was smaller than the random number ");
-                    }
-                    else {
-                        pw.println("You guessed correct.");
+                    System.out.printf("[%d] guessed %d\n", gameNumber, inputNumber);
+                    if (inputNumber < number) {
+                        pw.println("You guessed too small.");
+                    } else if (inputNumber > number) {
+                        pw.println("You guessed too big.");
+                    } else {
+                        // Game won
+                        System.out.printf("[%d] Client has won the game.\n", gameNumber);
+                        pw.println(("Hooray! You guessed it. The number was " + number + "."));
                         break;
                     }
-                    pw.println(("You have " + (MAX_TRIES - i - 1) + " remaining try/tries."));
-
-                    if (i == 5) {
-                        pw.println("No tries remaining. YOU LOST");
-                    }
                 } catch (NumberFormatException e) {
-                    System.out.println("User input was invalid. ");
-                    pw.println("User input was invalid. ");
-                    i--; //invalid input does not effect the game
+                    System.out.printf("[%d] Invalid input.\n", gameNumber);
+                    pw.println("Invalid input.");
+                    // Do not count this try
+                    i--;
+                }
+                if (i == 5) {
+                    // Game lost
+                    System.out.printf("[%d] Client reached max number of tries.\n", gameNumber);
+                    pw.println("You have lost. the number was " + number + ".");
                 }
             }
 
+            // Game finished
+            pw.println("Game finished.");
             pw.close();
             br.close();
             client.close();
-        } catch (IOException ignored) {
-            //not handling IOException
+        } catch (SocketException ignored) {
+            System.out.printf("[%d] Client disconnected.\n", gameNumber);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-
     }
-
 
     private static int getNumberFromClient(BufferedReader br) throws IOException {
         String str_input = br.readLine();
-        return Integer.parseInt(new String(str_input).trim());
+        return Integer.parseInt(str_input.trim());
     }
+
 }
