@@ -1,6 +1,9 @@
 package de.uulm.in.vs.grn.a3;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,7 +26,6 @@ public class NumberGuessingGameRequestHandler implements Runnable {
                 gameNumber, client.getInetAddress().toString(), client.getPort());
 
         try {
-            InputStream inputStream = client.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
             PrintWriter pw = new PrintWriter(client.getOutputStream(), true);
 
@@ -70,12 +72,19 @@ public class NumberGuessingGameRequestHandler implements Runnable {
         } catch (SocketException ignored) {
             System.out.printf("[%d] Client disconnected.\n", gameNumber);
         } catch (IOException e) {
+            try {
+                client.close();
+            } catch (IOException ignored) {
+            }
             e.printStackTrace();
         }
     }
 
     private static int getNumberFromClient(BufferedReader br) throws IOException {
         String str_input = br.readLine();
+        if (str_input == null) {
+            throw new IOException("EOF");
+        }
         return Integer.parseInt(str_input.trim());
     }
 
