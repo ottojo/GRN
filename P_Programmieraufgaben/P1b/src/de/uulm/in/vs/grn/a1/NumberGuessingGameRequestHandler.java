@@ -67,6 +67,10 @@ public class NumberGuessingGameRequestHandler implements Runnable {
         } catch (SocketException ignored) {
             System.out.printf("[%d] Client disconnected.\n", gameNumber);
         } catch (IOException e) {
+            try {
+                clientSocket.close();
+            } catch (IOException ignored) {
+            }
             e.printStackTrace();
         }
     }
@@ -81,6 +85,8 @@ public class NumberGuessingGameRequestHandler implements Runnable {
             buffer[i] = (byte) inputStream.read();
             if (buffer[i] == '\n') {
                 break;
+            } else if (buffer[i] == -1) {
+                throw new IOException("EOF");
             }
         }
         return Integer.parseInt(new String(buffer).trim());

@@ -67,6 +67,8 @@ public class NumberGuessingGameServer {
                 } catch (SocketException ignored) {
                     System.out.print("Client disconnected.\n");
                 } catch (IOException e) {
+                    clientSocket.close();
+                    guessingServer.close();
                     e.printStackTrace();
                 }
             }
@@ -85,6 +87,8 @@ public class NumberGuessingGameServer {
             buffer[i] = (byte) inputStream.read();
             if (buffer[i] == '\n') {
                 break;
+            } else if (buffer[i] == -1) {
+                throw new IOException("EOF");
             }
         }
         return Integer.parseInt(new String(buffer).trim());
