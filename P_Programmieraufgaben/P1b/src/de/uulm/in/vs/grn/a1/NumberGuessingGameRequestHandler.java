@@ -9,10 +9,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class NumberGuessingGameRequestHandler implements Runnable {
     private Socket clientSocket;
-    private static int gameNumber = 0;  // Just for debug purposes, to correlate console output with socket
+    private static int gameCounter;
+    private int gameNumber;  // Just for debug purposes, to correlate console output with socket
 
     NumberGuessingGameRequestHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
+
+        this.gameNumber = gameCounter;
+        gameCounter++;
     }
 
     @Override
