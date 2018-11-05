@@ -9,10 +9,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class NumberGuessingGameRequestHandler implements Runnable {
     private Socket clientSocket;
-    private static int gameNumber = 0;  // Just for debug purposes, to correlate console output with socket
+    private static int gameCounter;
+    private int gameNumber;  // Just for debug purposes, to correlate console output with socket
 
     NumberGuessingGameRequestHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
+
+        this.gameNumber = gameCounter;
+        gameCounter++;
     }
 
     @Override
@@ -67,6 +71,10 @@ public class NumberGuessingGameRequestHandler implements Runnable {
         } catch (SocketException ignored) {
             System.out.printf("[%d] Client disconnected.\n", gameNumber);
         } catch (IOException e) {
+            try {
+                clientSocket.close();
+            } catch (IOException ignored) {
+            }
             e.printStackTrace();
         }
     }
@@ -81,6 +89,8 @@ public class NumberGuessingGameRequestHandler implements Runnable {
             buffer[i] = (byte) inputStream.read();
             if (buffer[i] == '\n') {
                 break;
+            } else if (buffer[i] == -1) {
+                throw new IOException("EOF");
             }
         }
         return Integer.parseInt(new String(buffer).trim());
