@@ -33,8 +33,7 @@ public class NumberGuessingGameRequestHandler implements Runnable {
             int number = ThreadLocalRandom.current().nextInt(50);
             System.out.printf("[%d] Number for client is %d.\n", gameNumber, number);
 
-            pw.println(("Welcome! You are game Nr. " + gameNumber));
-            pw.write("Guess the number!\n");
+            pw.println(("Welcome! You are game Nr. " + gameNumber+"\nGuess the number!"));
 
             // Game
             for (int i = 0; i < MAX_TRIES; i++) {
