@@ -1,0 +1,43 @@
+<project basedir="." default="main">
+    <!-- An jeweilige Aufgabe anpassen -->
+    <property name="grn.task"    value="3a" />
+    <property name="grn.group"   value="101" />
+    <property name="main-class"  value="de.uulm.in.vs.grn.SockagramClient"/>
+
+    <!-- Unveraendert lassen! -->
+    <property name="src.dir"     value="src" />
+    <property name="build.dir"   value="build" />
+    <property name="grn.file"    value="GRN-Gruppe${grn.group}-P${grn.task}" />
+    <property name="classes.dir" value="${build.dir}/classes" />
+    <property name="jar.dir"     value="${build.dir}/jar" />
+
+    <target name="clean">
+        <delete dir="${build.dir}" />
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}" />
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false" />
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/${grn.file}.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run" depends="jar">
+        <java jar="${jar.dir}/${grn.file}.jar" fork="true" />
+    </target>
+
+    <target name="clean-build" depends="clean,jar" />
+
+    <target name="main" depends="clean,run" />
+
+    <target name="submission">
+        <zip destfile="${grn.file}.zip" basedir="." includes="build.xml, src/**" />
+    </target>
+</project>
