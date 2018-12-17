@@ -23,6 +23,7 @@ public class P4a {
         }
 
         while (!server.isClosed()) {
+            System.out.println("Waiting for client");
             try (Socket client = server.accept()) {
 
                 BufferedReader clientReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -30,6 +31,10 @@ public class P4a {
 
                 while (!client.isClosed()) {
                     String command = clientReader.readLine();
+                    if (command == null) {
+                        System.out.println("END OF STREAM");
+                        break;
+                    }
                     command = command.trim();
                     String[] commandArgs = command.split(" ");
 
