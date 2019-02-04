@@ -1,3 +1,9 @@
 ﻿# Gitignore
 P_Programmieraufgaben/**/GRN-Gruppe101-???.zip
 P_Programmieraufgaben/**/*.class
+workspace.xml
+uiDesigner.xml
+project-template.xml
+*.jar
+*.kotlin_module
+
